@@ -11,11 +11,11 @@ import java.util.List;
 
 public class MongoConnection {
 
-    private static Mongo instance;
+    private static MongoClient instance;
 
     private MongoConnection(){}
 
-    public static Mongo init(Struct arguments){
+    public static MongoClient init(Struct arguments){
 
         if(instance != null){
             return instance;
@@ -23,12 +23,15 @@ public class MongoConnection {
 
         CFMLEngine engine = CFMLEngineFactory.getInstance();
         Cast caster = engine.getCastUtil();
-        MongoOptions opts = new MongoOptions();
+        MongoOptions opts = new MongoClientOptions().builder();
         List<ServerAddress> addr = new ArrayList<ServerAddress>();
 
         try{
             //options
-            opts.connectionsPerHost = caster.toIntValue(arguments.get("connectionsPerHost"));
+            opts.connectionsPerHost( caster.toIntValue(arguments.get("connectionsPerHost")) );
+            // Add SSL?
+            (if arguments.get("ssl") == true)
+                opts.socketFactory( new SSLSocketFactory().getDefault() );
 
             String[] hosts = caster.toString(arguments.get("hosts")).split("\\n");
 
@@ -38,7 +41,7 @@ public class MongoConnection {
 
             //create the mongo instance
             try {
-                instance = new Mongo(addr, opts);
+                instance = new MongoClient(addr, opts);
             } catch (MongoException e) {
                 e.printStackTrace();
             }
@@ -56,7 +59,7 @@ public class MongoConnection {
         return instance;
     }
 
-    public static Mongo getInstance(){
+    public static MongoClient getInstance(){
         return instance;
     }
 
