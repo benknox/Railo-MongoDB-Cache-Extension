@@ -53,6 +53,15 @@
 					required=true,
 					description="",
 					type="radio"
+				),
+				
+			field(	displayName="Use SSL",
+					name="ssl",
+					values="true,false",
+					defaultValue=true,
+					required=true,
+					description="To use an SSL connection to the Mongo database or not",
+					type="radio"
 				)
 		)>
 
